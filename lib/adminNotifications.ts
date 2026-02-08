@@ -13,19 +13,19 @@ export function scheduleAdminNotification(sessionId: string, chatbotToken: strin
     clearTimeout(sessionTimers[sessionId]);
   }
 
-  // Set timeout for 10 seconds
+  // Set timeout for 30 minutes
   sessionTimers[sessionId] = setTimeout(async () => {
     try {
       await connectToDatabase();
       
-      // Check if admin has replied in the last 10 seconds (since schedule time)
-      const tenSecondsAgo = new Date(Date.now() - 10000);
-      
+      // Check if admin has replied in the last 30 minutes (since schedule time)
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
       const adminReply = await ChatHistory.findOne({
         sessionId,
         chatbotToken,
         messageBy: "admin",
-        timestamp: { $gt: tenSecondsAgo },
+        timestamp: { $gt: thirtyMinutesAgo },
       });
 
       if (!adminReply) {
@@ -66,5 +66,5 @@ export function scheduleAdminNotification(sessionId: string, chatbotToken: strin
     } finally {
       delete sessionTimers[sessionId];
     }
-  }, 10000); 
+  }, 30 * 60 * 1000); // 30 minutes
 }
