@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     await connectToDatabase();
 
     // Find messages for this session
+    // Find messages for this session
     const messages = await ChatHistory.find({
       chatbotToken: token,
       sessionId: sessionId
