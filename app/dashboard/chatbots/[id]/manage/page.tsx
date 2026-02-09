@@ -936,13 +936,15 @@ export default function ManageChatbotPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+             
+            </CardContent>
+          </Card> */}
+
+           <div className="flex justify-end">
                 <Button onClick={() => void saveSettings()} disabled={saving}>
                   {saving ? "Saving…" : "Save changes"}
                 </Button>
               </div>
-            </CardContent>
-          </Card> */}
         </>
       ) : null}
     </div>
