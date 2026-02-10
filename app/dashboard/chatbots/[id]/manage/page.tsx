@@ -1,5 +1,7 @@
 "use client";
 
+import { ChatbotTabs } from "@/components/app/ChatbotTabs";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
@@ -304,11 +306,14 @@ export default function ManageChatbotPage() {
 
   return (
     <div className="mx-auto max-w-4xl grid gap-6">
-      <div>
-        <div className="text-2xl font-semibold">Manage chatbot</div>
-        <div className="text-sm text-muted-foreground">
-          Upload instructions and tune behavior.
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="text-2xl font-semibold">Manage chatbot</div>
+          <div className="text-sm text-muted-foreground">
+            Upload instructions and tune behavior.
+          </div>
         </div>
+  <ChatbotTabs chatbotId={id} active="settings" />
       </div>
 
       {error ? (
@@ -326,12 +331,13 @@ export default function ManageChatbotPage() {
         </Card>
       ) : null}
 
-      {!loading && chatbot ? (
+      {/* ...existing code... */}
+       {!loading && chatbot ? (
         <>
           <Card>
             <CardHeader>
               <CardTitle>Chatbot</CardTitle>
-            </CardHeader>
+                  </CardHeader>
             <CardContent className="grid gap-2">
               <div className="text-sm">
                 <span className="text-muted-foreground">Name:</span>{" "}

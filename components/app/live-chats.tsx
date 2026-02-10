@@ -647,7 +647,7 @@ export function LiveChats({ chatbotId }: Readonly<{ chatbotId: string }>) {
             type="button"
             onClick={() => setSelectedSessionId(s.sessionId)}
             className={cn(
-              "rounded-md border px-3 py-2 text-left text-sm",
+              "rounded-md border overflow-hidden px-3 py-2 text-left text-sm",
               selectedSessionId === s.sessionId
                 ? "border-primary/60 bg-primary/10"
                 : "hover:bg-accent"

@@ -1,5 +1,5 @@
 {
-  "cron": [
+  "crons": [
     {
       "path": "/api/notify-admin",
       "schedule": "* * * * *"

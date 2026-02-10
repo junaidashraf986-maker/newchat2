@@ -1,13 +1,5 @@
-import Link from "next/link";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { requireUser } from "@/lib/auth/server";
-import { connectToDatabase } from "@/lib/db/mongoose";
-import { Chatbot } from "@/lib/models/Chatbot";
-import { ChatHistory } from "@/lib/models/ChatHistory";
-import { WidgetSession } from "@/lib/models/WidgetSession";
-
+// Type definitions at the top, only once
 type SessionRow = {
   _id: unknown;
   lastSeenAt: Date;
@@ -26,29 +18,15 @@ type MessageRow = {
   botResponse: string;
 };
 
-function TabLink({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={
-        "rounded-md px-3 py-2 text-sm border transition-colors " +
-        (active
-          ? "bg-accent text-accent-foreground border-transparent"
-          : "hover:bg-accent hover:text-accent-foreground")
-      }
-    >
-      {label}
-    </Link>
-  );
-}
+import Link from "next/link";
+import { ChatbotTabs } from "@/components/app/ChatbotTabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { requireUser } from "@/lib/auth/server";
+import { connectToDatabase } from "@/lib/db/mongoose";
+import { Chatbot } from "@/lib/models/Chatbot";
+import { ChatHistory } from "@/lib/models/ChatHistory";
+import { WidgetSession } from "@/lib/models/WidgetSession";
 
 export default async function ChatbotOverviewPage({
   params,
@@ -77,7 +55,7 @@ export default async function ChatbotOverviewPage({
     );
   }
 
-  const base = `/dashboard/chatbots/${String(chatbot._id)}`;
+  // base variable removed; use ChatbotTabs for navigation
 
   const now = new Date();
   const since7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -134,18 +112,7 @@ export default async function ChatbotOverviewPage({
           ) : null}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <TabLink href={`${base}/overview`} label="Overview" active />
-          <TabLink
-            href={`${base}/live-chats`}
-            label="Live Chats"
-          />
-          <TabLink
-            href={`/projects/${String(chatbot._id)}/analytics`}
-            label="Analytics"
-          />
-          <TabLink href={`${base}/settings`} label="Settings" />
-        </div>
+  <ChatbotTabs chatbotId={String(chatbot._id)} active="overview" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -160,7 +127,6 @@ export default async function ChatbotOverviewPage({
             <div className="text-xs text-muted-foreground">Widget opens</div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle className="text-sm text-muted-foreground">
@@ -239,7 +205,7 @@ export default async function ChatbotOverviewPage({
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Recent messages</CardTitle>
         </CardHeader>
@@ -267,7 +233,7 @@ export default async function ChatbotOverviewPage({
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
