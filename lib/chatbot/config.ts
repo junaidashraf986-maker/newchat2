@@ -1,5 +1,5 @@
 export const CHATBOT_LIMITS = {
-  instructionTextMaxChars: 4000,
+  instructionTextMaxChars: 50000,
   instructionFilesMaxCount: 3,
   instructionFileMaxBytes: 2 * 1024 * 1024, // 2MB
   // Chunking for embeddings
