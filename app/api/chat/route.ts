@@ -105,8 +105,15 @@ export async function POST(req: Request) {
     }
 
     // Otherwise, use Gemini with instructionText and context
+    // Only include FAQ answers in Gemini context if their score is above CONTEXT_CONFIDENCE_THRESHOLD
     const contextSnippets = matches
-      .filter((m) => typeof m.metadata?.text === "string")
+      .filter((m) => {
+        if (typeof m.metadata?.text !== "string") return false;
+        if (m.metadata?.kind === "faq") {
+          return m.score !== undefined && m.score >= CONTEXT_CONFIDENCE_THRESHOLD;
+        }
+        return true;
+      })
       .map((m) => m.metadata?.text)
       .filter(Boolean)
       .slice(0, 5);
