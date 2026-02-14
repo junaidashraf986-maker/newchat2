@@ -1022,8 +1022,8 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                     flexDirection: "column",
                     alignItems: "flex-end",
                     gap: isMobile ? 4 : 8,
-                    background: isDark ? "#0b0b0b" : "#f8f9fa",
-                    borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
+                    background: "#fff",
+                    borderTop: "1px solid rgba(0,0,0,0.05)",
                     flexShrink: 0,
                   }}
               >
