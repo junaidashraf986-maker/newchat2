@@ -450,19 +450,23 @@ function ChatWidget({ token }: { token: string }) {
     sendMessage(question, "text");
   };
 
-  const toggleChat = () => {
-    if (isOpen) {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setIsOpen(false);
-        setIsAnimating(false);
-      }, 300);
-    } else {
-      setIsOpen(true);
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 300);
-    }
-  };
+const toggleChat = () => {
+  if (isOpen) {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsAnimating(false);
+      // Tell parent to shrink
+      window.parent?.postMessage({ type: 'mchatly:close' }, '*');
+    }, 300);
+  } else {
+    setIsOpen(true);
+    setIsAnimating(true);
+    // Tell parent to expand
+    window.parent?.postMessage({ type: 'mchatly:open' }, '*');
+    setTimeout(() => setIsAnimating(false), 300);
+  }
+};
 
   useEffect(() => {
     const init = async () => {
@@ -599,8 +603,8 @@ function ChatWidget({ token }: { token: string }) {
             position: "fixed",
             bottom: 24,
             right: 24,
-            width: 60,
-            height: 60,
+            width: 50,
+            height: 50,
             borderRadius: "50%",
             background: primaryColor,
             color: "#fff",
@@ -609,7 +613,6 @@ function ChatWidget({ token }: { token: string }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
             zIndex: 9998,
             transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             transform: isAnimating ? "scale(0.8) rotate(90deg)" : "scale(1) rotate(0deg)",
@@ -638,7 +641,7 @@ function ChatWidget({ token }: { token: string }) {
             position: "fixed",
             bottom: 24,
             right: 24,
-            width: 380,
+            width: 356,
             height: 600,
             maxHeight: "calc(100vh - 48px)",
             borderRadius: 20,
@@ -646,7 +649,6 @@ function ChatWidget({ token }: { token: string }) {
             background: "var(--mchatly-panel-bg, #fff)",
             color: "var(--mchatly-panel-text, #111)",
             fontFamily: "system-ui",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
             zIndex: 9999,
             display: "flex",
             flexDirection: "column",
@@ -681,7 +683,6 @@ function ChatWidget({ token }: { token: string }) {
                   background: "#fff",
                   padding: "32px 28px",
                   borderRadius: 20,
-                  boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 20,
@@ -742,15 +743,12 @@ function ChatWidget({ token }: { token: string }) {
                     fontSize: 16,
                     border: "none",
                     cursor: "pointer",
-                    transition: "transform 0.2s, box-shadow 0.2s",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 10px 20px rgba(0,0,0,0.15)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
                   Start Chat
@@ -864,7 +862,7 @@ function ChatWidget({ token }: { token: string }) {
                   padding: msg.type === "image" || msg.type === "voice" ? 4 : "12px 16px",
                   maxWidth: "85%",
                   wordBreak: "break-word",
-                  boxShadow: msg.role === "bot" ? "0 1px 2px rgba(0,0,0,0.1)" : "none",
+               
                   fontSize: 14,
                   lineHeight: 1.5,
                 }}

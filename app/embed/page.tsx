@@ -13,8 +13,19 @@ export default async function EmbedPage({
   return (
     <>
       {/* Force override styles with !important */}
-      <style>
+      <style>  
+      
+      
         {`
+
+          html, body {
+          background: transparent !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+
+
           .embedContainer {
             height: 100vh !important;
             position: fixed !important;
@@ -25,10 +36,10 @@ export default async function EmbedPage({
 
             width: 64px !important;
             height: 60px !important;
-            min-width: 64px !important;
-            min-height: 60px !important;
-            max-width: 64px !important;
-            max-height: 60px !important;
+            min-width: 80px !important;
+            min-height: 80px !important;
+            max-width: 80px !important;
+            max-height: 80px !important;
 
             display: block !important;
             z-index: 1000003 !important;
@@ -51,7 +62,6 @@ export default async function EmbedPage({
             overflow: visible !important;
             resize: none !important;
 
-            cursor: none !important;
             pointer-events: auto !important;
 
             border-radius: unset !important;
@@ -62,7 +72,15 @@ export default async function EmbedPage({
 
       <div className="embedContainer">
         {safeToken ? (
-          <ChatWidget token={safeToken} />
+         <div style={{ 
+        width: '100%', 
+        height: '100%', 
+        position: 'relative',
+        background: 'transparent',
+        overflow: 'visible' // Changed from hidden
+      }}>
+        <ChatWidget token={safeToken} />
+      </div>
         ) : (
           <div style={{ padding: 32, textAlign: "center" }}>
             <b>Missing token</b>
