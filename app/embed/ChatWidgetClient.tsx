@@ -1024,28 +1024,29 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                     gap: isMobile ? 4 : 8,
                     background: "#fff",
                     borderTop: "1px solid rgba(0,0,0,0.05)",
-                    border: "1px solid #d1d5db",
                     boxShadow: "0 2px 8px 0 rgba(0,0,0,0.07)",
                     flexShrink: 0,
                   }}
               >
-                <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 3 : 6, maxWidth: isMobile ? "90%" : "60%", alignItems: "flex-end" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 3 : 6, alignItems: "flex-end" }}>
                   {starterQuestions.slice(0, 3).map((q, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleStarterClick(q)}
                       style={{
-                        padding: isMobile ? "6px 10px" : "10px 14px",
-                        borderRadius: isMobile ? 8 : 12,
-                        background: "#fff",
+                        padding: isMobile ? "7px 10px" : "12px 16px",
+                        borderRadius: "14px 14px 4px 14px",
+                        background: userBubbleColor,
                         color: "#111",
-                        border: "1px solid #d1d5db",
-                        boxShadow: "0 1px 4px 0 rgba(0,0,0,0.08)",
+                        border: "none",
+                        boxShadow: "none",
                         cursor: "pointer",
-                        fontSize: isMobile ? 11 : 13,
-                        textAlign: "right",
+                        fontSize: isMobile ? 12 : 14,
+                        textAlign: "left",
                         transition: "all 0.2s",
-                        width: "100%",
+                        width: "auto",
+                        maxWidth: undefined,
+                        wordBreak: "break-word",
                       }}
                     >
                       {q}
