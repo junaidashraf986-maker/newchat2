@@ -625,10 +625,10 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
           onClick={toggleChat}
           style={{
             position: "fixed",
-            bottom: isMobile ? 10 : 24,
-            right: isMobile ? 10 : 24,
-            width: isMobile ? 38 : 50,
-            height: isMobile ? 38 : 50,
+            bottom: isMobile ? 14 : 24,
+            right: isMobile ? 14 : 24,
+            width: isMobile ? 45 : 50,
+            height: isMobile ? 45 : 50,
             borderRadius: "50%",
             background: primaryColor,
             color: "#fff",
@@ -665,8 +665,8 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
             position: "fixed",
             bottom: isMobile ? 30 : 24,
             right: isMobile ? 8 : 24,
-            width: isMobile ? 310 : 340,
-            height: isMobile ? 440 : 520,
+            width: isMobile ? 325 : 340,
+            height: isMobile ? 490 : 520,
             maxHeight: isMobile ? 'calc(100vh - 56px)' : 'calc(100vh - 48px)',
             borderRadius: isMobile ? 10 : 18,
             overflow: "hidden",
@@ -822,7 +822,7 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                 }}
               >
                 <img
-                  src="/ahan.jpeg"
+                  src="https://mchatly2.vercel.app/ahan.jpeg"
                   alt="Ahan Chaudhry"
                   style={{
                     width: '100%',
