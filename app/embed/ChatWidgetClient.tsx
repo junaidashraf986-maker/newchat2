@@ -1011,7 +1011,7 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                   {starterQuestions.slice(0, 3).map((q, idx) => (
                     <button
                       key={idx}
-                      onClick={() => handleStarterClick(q, idx)}
+                      onClick={() => handleStarterClick(q)}
                       style={{
                         padding: "10px 14px",
                         borderRadius: 12,
