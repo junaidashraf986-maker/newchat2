@@ -1024,6 +1024,8 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                     gap: isMobile ? 4 : 8,
                     background: "#fff",
                     borderTop: "1px solid rgba(0,0,0,0.05)",
+                    border: "1px solid #d1d5db",
+                    boxShadow: "0 2px 8px 0 rgba(0,0,0,0.07)",
                     flexShrink: 0,
                   }}
               >
@@ -1035,9 +1037,10 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                       style={{
                         padding: isMobile ? "6px 10px" : "10px 14px",
                         borderRadius: isMobile ? 8 : 12,
-                        background: isDark ? "rgba(255,255,255,0.1)" : "#fff",
-                        color: isDark ? "#fff" : "#111",
-                        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)"}`,
+                        background: "#fff",
+                        color: "#111",
+                        border: "1px solid #d1d5db",
+                        boxShadow: "0 1px 4px 0 rgba(0,0,0,0.08)",
                         cursor: "pointer",
                         fontSize: isMobile ? 11 : 13,
                         textAlign: "right",
