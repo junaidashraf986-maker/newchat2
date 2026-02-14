@@ -66,7 +66,7 @@ export async function POST(req: Request) {
 
     console.log('these are the matches ',matches)
 
-    // Try to match FAQ first
+    // Find best FAQ match
     let bestFAQ: { question: string; answer: string; score: number } | null = null;
     for (const m of matches) {
       if (m.metadata?.kind === "faq" && typeof m.metadata?.text === "string" && m.score !== undefined) {
@@ -80,58 +80,24 @@ export async function POST(req: Request) {
       }
     }
 
-    console.log('this is the best faq condifence :',bestFAQ?.score)
-
-    if (bestFAQ) {
-      console.log(`[FAQ Match] Best FAQ score: ${bestFAQ.score}, threshold: ${FAQ_CONFIDENCE_THRESHOLD}`);
-      if (bestFAQ.score >= FAQ_CONFIDENCE_THRESHOLD) {
-        console.log(`[FAQ Match] Returning FAQ answer:`, extractFAQAnswer(bestFAQ.answer));
-        // consolel.log('FAQ answer after extraction:', extractFAQAnswer(bestFAQ.answer));
-        return jsonOk({
-          token: parsed.data.token,
-          reply: extractFAQAnswer(bestFAQ.answer),
-          sources: [
-            {
-              id: bestFAQ.question,
-              score: bestFAQ.score,
-              kind: "faq",
-            },
-          ],
-          usedContext: 1,
-        });
-      } else {
-        console.log(`[FAQ Match] FAQ score too low, using Gemini. Best FAQ:`, bestFAQ);
-      }
-    }
-
-    // Otherwise, use Gemini with instructionText and context
-    // Only include FAQ answers in Gemini context if their score is above CONTEXT_CONFIDENCE_THRESHOLD
+    // Build context snippets (include FAQ and other context)
     const contextSnippets = matches
-      .filter((m) => {
-        if (typeof m.metadata?.text !== "string") return false;
-        if (m.metadata?.kind === "faq") {
-          return m.score !== undefined && m.score >= CONTEXT_CONFIDENCE_THRESHOLD;
-        }
-        return true;
-      })
+      .filter((m) => typeof m.metadata?.text === "string")
       .map((m) => m.metadata?.text)
       .filter(Boolean)
       .slice(0, 5);
 
-    // Improved system prompt
-    const systemPrompt =
-      `You are an AI chatbot assistant for a business. Your behavior, tone, and rules are defined by the following instructions from the business owner (between triple dashes):\n---\n${(chatbot.instructionText ?? '').trim()}\n---\n` +
-      `If the user's question matches a FAQ, reply with the exact FAQ answer, verbatim, with no added prefixes or formatting.\n` +
-      `If the question is not covered by a FAQ, use the provided context and your own knowledge to answer concisely and helpfully.\n` +
-      `For non-FAQ answers, never include 'A:' or 'Answer:' or any similar prefix. Only return the answer text itself. If you don't know, say so honestly.`;
-
-    let prompt = `${systemPrompt}\n`;
+    // Build Gemini prompt with instruction text, FAQ, and context
+    let prompt = `You are an AI chatbot assistant for a business. Your behavior, tone, and rules are defined by the following instructions from the business owner (between triple dashes):\n---\n${(chatbot.instructionText ?? '').trim()}\n---\n`;
+    if (bestFAQ && bestFAQ.score >= FAQ_CONFIDENCE_THRESHOLD) {
+      prompt += `\nThe user's question matches the following FAQ. Use this FAQ answer to help craft a natural, helpful response.\nFAQ Question: ${bestFAQ.question}\nFAQ Answer: ${extractFAQAnswer(bestFAQ.answer)}\n`;
+    }
     if (contextSnippets.length) {
-      prompt += `Here is some context from the knowledge base and FAQs:\n${contextSnippets
+      prompt += `\nHere is some context from the knowledge base and FAQs:\n${contextSnippets
         .map((t, i) => `Context ${i + 1}: ${t}`)
         .join("\n")}\n`;
-    } 
-    prompt += `User: ${query}\nAssistant:`;
+    }
+    prompt += `\nUser: ${query}\nAssistant:`;
 
     const geminiReply = await generateText({ prompt });
 

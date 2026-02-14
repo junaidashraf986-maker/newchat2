@@ -174,7 +174,7 @@ function ChatWidget({ token }: { token: string }) {
     return new Promise((resolve, reject) => {
       if ((window as any).Ably) return resolve((window as any).Ably);
       const script = document.createElement("script");
-      script.src = "https://cdn.ably.com/lib/ably.min-1.js";
+      script.src = "https://cdn.ably.com/lib/ably.min-1.js ";
       script.onload = () => resolve((window as any).Ably);
       script.onerror = () => reject(new Error("Failed to load Ably"));
       document.head.appendChild(script);
@@ -658,6 +658,107 @@ function ChatWidget({ token }: { token: string }) {
             pointerEvents: isOpen ? "auto" : "none",
           }}
         >
+          {/* User Info Modal - MOVED INSIDE and positioned absolutely */}
+          {showUserInfoModal && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgba(0,0,0,0.6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 100,
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              <form
+                onSubmit={handleUserInfoSubmit}
+                style={{
+                  background: "#fff",
+                  padding: "32px 28px",
+                  borderRadius: 20,
+                  boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 20,
+                  minWidth: 300,
+                  maxWidth: "85%",
+                  margin: 20,
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8, color: "#111" }}>Start Conversation</div>
+                  <div style={{ fontSize: 14, opacity: 0.6, color: "#666" }}>
+                    Please provide your details to begin chatting
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <input
+                    name="userName"
+                    placeholder="Your Name"
+                    required
+                    style={{
+                      padding: 14,
+                      borderRadius: 12,
+                      border: "1px solid #e5e7eb",
+                      fontSize: 15,
+                      width: "100%",
+                      outline: "none",
+                      transition: "border-color 0.2s",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = primaryColor)}
+                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+                  />
+                  <input
+                    name="userWhatsapp"
+                    placeholder="WhatsApp Number"
+                    type="tel"
+                    required
+                    style={{
+                      padding: 14,
+                      borderRadius: 12,
+                      border: "1px solid #e5e7eb",
+                      fontSize: 15,
+                      width: "100%",
+                      outline: "none",
+                      transition: "border-color 0.2s",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = primaryColor)}
+                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "14px 20px",
+                    borderRadius: 12,
+                    background: primaryColor,
+                    color: "#fff",
+                    fontWeight: 600,
+                    fontSize: 16,
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 10px 20px rgba(0,0,0,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  Start Chat
+                </button>
+              </form>
+            </div>
+          )}
+
           {/* Header */}
           <div
             style={{
@@ -990,106 +1091,6 @@ function ChatWidget({ token }: { token: string }) {
           >
             Powered by <a href={process.env.SITE_URL} style={{ color: "inherit" }}>mchatly</a>
           </div>
-        </div>
-      )}
-
-      {/* User Info Modal */}
-      {showUserInfoModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10001,
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <form
-            onSubmit={handleUserInfoSubmit}
-            style={{
-              background: "#fff",
-              padding: "32px 28px",
-              borderRadius: 20,
-              boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-              minWidth: 340,
-              maxWidth: "90%",
-            }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8, color: "#111" }}>Start Conversation</div>
-              <div style={{ fontSize: 14, opacity: 0.6, color: "#666" }}>
-                Please provide your details to begin chatting
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <input
-                name="userName"
-                placeholder="Your Name"
-                required
-                style={{
-                  padding: 14,
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                  fontSize: 15,
-                  width: "100%",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = primaryColor)}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-              />
-              <input
-                name="userWhatsapp"
-                placeholder="WhatsApp Number"
-                type="tel"
-                required
-                style={{
-                  padding: 14,
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                  fontSize: 15,
-                  width: "100%",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = primaryColor)}
-                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-              />
-            </div>
-            <button
-              type="submit"
-              style={{
-                padding: "14px 20px",
-                borderRadius: 12,
-                background: primaryColor,
-                color: "#fff",
-                fontWeight: 600,
-                fontSize: 16,
-                border: "none",
-                cursor: "pointer",
-                transition: "transform 0.2s, box-shadow 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 10px 20px rgba(0,0,0,0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              Start Chat
-            </button>
-          </form>
         </div>
       )}
 
