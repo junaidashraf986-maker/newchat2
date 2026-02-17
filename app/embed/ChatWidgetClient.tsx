@@ -55,6 +55,7 @@ function ChatWidget({ token }: { token: string }) {
   const [showUserInfoModal, setShowUserInfoModal] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo>({ name: "", whatsapp: "" });
   const [starterQuestions, setStarterQuestions] = useState<string[]>([]);
+  const [showStarterQuestions, setShowStarterQuestions] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [chatbotId, setChatbotId] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeConfig | null>(null);
@@ -311,9 +312,6 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
     if (!token) return;
     const sid = getOrCreateSessionId();
     if (!sid) return;
-    
-    const userInfo = await getOrPromptUserInfo();
-    
     try {
       fetch("/api/widget-session", {
         method: "POST",
@@ -322,8 +320,9 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
           token,
           sessionId: sid,
           userId: userIdRef.current,
-          name: userInfo.name,
-          whatsapp: userInfo.whatsapp,
+          // name and whatsapp will be empty if not set yet
+          name: localStorage.getItem(`mchatly:name:${token}`) || "",
+          whatsapp: localStorage.getItem(`mchatly:whatsapp:${token}`) || "",
           pageUrl: String(location.href),
           referrer: document.referrer ? String(document.referrer) : undefined,
           language: navigator.language ? String(navigator.language) : undefined,
@@ -333,7 +332,7 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
         }),
       }).catch(() => {});
     } catch {}
-  }, [token, getOrCreateSessionId, getOrPromptUserInfo]);
+  }, [token, getOrCreateSessionId]);
 
   const loadHistory = useCallback(async () => {
     if (!token) return;
@@ -452,13 +451,16 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
     const val = input.trim();
     if (!val) return;
     setInput("");
+    // Prompt for user info before sending
+    await getOrPromptUserInfo();
     await sendMessage(val, "text");
   };
 
- const handleStarterClick = (question: string) => {
-  // Clear ALL starter questions immediately
+ const handleStarterClick = async (question: string) => {
   setStarterQuestions([]);
-  // Then send the selected question
+  setShowStarterQuestions(false);
+  // Prompt for user info before sending
+  await getOrPromptUserInfo();
   sendMessage(question, "text");
 };
 
@@ -480,11 +482,9 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
 
   useEffect(() => {
     const init = async () => {
-      await getOrPromptUserInfo();
       await loadTheme();
       await trackSession();
       await loadHistory();
-      
       try {
         window.parent?.postMessage({ type: "mchatly:ready", token }, "*");
       } catch {}
@@ -496,6 +496,10 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
     if (historyLoaded && !didShowWelcome && welcomeMessage && messages.length === 0) {
       setDidShowWelcome(true);
       setMessages([{ text: welcomeMessage, role: "bot", type: "text" }]);
+      setShowStarterQuestions(false);
+      setTimeout(() => {
+        setShowStarterQuestions(true);
+      }, 5000);
     }
   }, [historyLoaded, didShowWelcome, welcomeMessage, messages.length]);
 
@@ -665,8 +669,8 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
             position: "fixed",
             bottom: isMobile ? 30 : 24,
             right: isMobile ? 8 : 24,
-            width: isMobile ? 325 : 340,
-            height: isMobile ? 490 : 520,
+            width: isMobile ? Math.round(325 * 1.05) : 340,
+            height: isMobile ? Math.round(490 * 1.15) : 520,
             maxHeight: isMobile ? 'calc(100vh - 56px)' : 'calc(100vh - 48px)',
             borderRadius: isMobile ? 10 : 18,
             overflow: "hidden",
@@ -1014,7 +1018,7 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
                 </div>
               )}
 
-                   {starterQuestions.length > 0 && (
+                   {showStarterQuestions && starterQuestions.length > 0 && (
               <div
                   style={{
                     padding: isMobile ? "7px 10px" : "12px 16px",
