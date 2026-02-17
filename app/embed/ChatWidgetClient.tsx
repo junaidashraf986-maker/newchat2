@@ -52,8 +52,7 @@ function ChatWidget({ token }: { token: string }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [adminActive, setAdminActive] = useState(false);
-  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
-  const [userInfo, setUserInfo] = useState<UserInfo>({ name: "", whatsapp: "" });
+  // Removed user info modal and state
   const [starterQuestions, setStarterQuestions] = useState<string[]>([]);
   const [showStarterQuestions, setShowStarterQuestions] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
@@ -62,7 +61,7 @@ function ChatWidget({ token }: { token: string }) {
   const [didShowWelcome, setDidShowWelcome] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [whatsappError, setWhatsappError] = useState<string | null>(null);
+  // Removed WhatsApp error state
   
   const bodyRef = useRef<HTMLDivElement>(null);
   const realtimeRef = useRef<any>(null);
@@ -99,57 +98,9 @@ function ChatWidget({ token }: { token: string }) {
     return sid;
   }, [token]);
 
-  const getOrPromptUserInfo = useCallback(async (): Promise<UserInfo> => {
-    const nameKey = `mchatly:name:${token}`;
-    const whatsappKey = `mchatly:whatsapp:${token}`;
-    let name = localStorage.getItem(nameKey);
-    let whatsapp = localStorage.getItem(whatsappKey);
+  // Removed getOrPromptUserInfo
 
-    if (!name || !whatsapp) {
-      setShowUserInfoModal(true);
-      return new Promise((resolve) => {
-        const checkInterval = setInterval(() => {
-          const newName = localStorage.getItem(nameKey);
-          const newWhatsapp = localStorage.getItem(whatsappKey);
-          if (newName && newWhatsapp) {
-            clearInterval(checkInterval);
-            setUserInfo({ name: newName, whatsapp: newWhatsapp });
-            resolve({ name: newName, whatsapp: newWhatsapp });
-          }
-        }, 100);
-      });
-    }
-
-    setUserInfo({ name, whatsapp });
-    return { name, whatsapp };
-  }, [token]);
-
-const handleUserInfoSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  const name = (e.currentTarget as HTMLFormElement).userName.value.trim();
-  const whatsapp = (e.currentTarget as HTMLFormElement).userWhatsapp.value.trim();
-
-  if (!name || !whatsapp) {
-    return;
-  }
-
-  // Validate WhatsApp number - must be more than 9 digits
-  const digitsOnly = whatsapp.replace(/\D/g, '');
-  if (digitsOnly.length <= 9) {
-    setWhatsappError('WhatsApp number must be greater than 9 digits');
-    return;
-  }
-
-  // Clear error if valid
-  setWhatsappError(null);
-
-  const nameKey = `mchatly:name:${token}`;
-  const whatsappKey = `mchatly:whatsapp:${token}`;
-  localStorage.setItem(nameKey, name);
-  localStorage.setItem(whatsappKey, whatsapp);
-  setShowUserInfoModal(false);
-  setUserInfo({ name, whatsapp });
-};
+// Removed handleUserInfoSubmit
 
   const safeHexColor = (v: string | undefined): string | null => {
     if (typeof v !== "string") return null;
@@ -452,15 +403,13 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
     if (!val) return;
     setInput("");
     // Prompt for user info before sending
-    await getOrPromptUserInfo();
-    await sendMessage(val, "text");
+  await sendMessage(val, "text");
   };
 
  const handleStarterClick = async (question: string) => {
   setStarterQuestions([]);
   setShowStarterQuestions(false);
-  // Prompt for user info before sending
-  await getOrPromptUserInfo();
+  // Send message directly
   sendMessage(question, "text");
 };
 
@@ -690,115 +639,7 @@ const handleUserInfoSubmit = (e: React.FormEvent) => {
             boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
           }}
         >
-          {/* User Info Modal */}
-          {showUserInfoModal && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0,0,0,0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 100,
-                backdropFilter: "blur(4px)",
-              }}
-            >
-              <form
-                onSubmit={handleUserInfoSubmit}
-                style={{
-                  background: "#fff",
-                  padding: "32px 28px",
-                  borderRadius: 20,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 20,
-                  minWidth: 300,
-                  maxWidth: "85%",
-                  margin: 20,
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8, color: "#111" }}>Start Conversation</div>
-                  <div style={{ fontSize: 14, opacity: 0.6, color: "#666" }}>
-                    Please provide your details to begin chatting
-                  </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <input
-                    name="userName"
-                    placeholder="Your Name"
-                    required
-                    style={{
-                      padding: 14,
-                      borderRadius: 12,
-                      border: "1px solid #e5e7eb",
-                      fontSize: 15,
-                      width: "100%",
-                      outline: "none",
-                      transition: "border-color 0.2s",
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = primaryColor)}
-                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-                  />
-              <input
-  name="userWhatsapp"
-  placeholder="WhatsApp Number"
-  type="tel"
-  required
-  onChange={(e) => {
-    // Clear error when user types
-    if (whatsappError) setWhatsappError(null);
-  }}
-  style={{
-    padding: 14,
-    borderRadius: 12,
-    border: `1px solid ${whatsappError ? '#ef4444' : '#e5e7eb'}`,
-    fontSize: 15,
-    width: "100%",
-    outline: "none",
-    transition: "border-color 0.2s",
-  }}
-  onFocus={(e) => {
-    if (!whatsappError) e.target.style.borderColor = primaryColor;
-  }}
-  onBlur={(e) => {
-    if (!whatsappError) e.target.style.borderColor = "#e5e7eb";
-  }}
-/>
-{whatsappError && (
-  <div style={{ color: '#ef4444', fontSize: 12, marginTop: -8 }}>
-    {whatsappError}
-  </div>
-)}
-                </div>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "14px 20px",
-                    borderRadius: 12,
-                    background: primaryColor,
-                    color: "#fff",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  Start Chat
-                </button>
-              </form>
-            </div>
-          )}
+          {/* User Info Modal removed */}
 
           {/* Header */}
           <div
