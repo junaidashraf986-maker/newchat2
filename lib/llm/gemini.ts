@@ -4,6 +4,8 @@ export const OPENAI_CHAT_MODEL = "gpt-3.5-turbo";
 
 const OPENAI_API_KEY ="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";
 
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+
 export async function generateText(opts: {
   prompt: string;
   model?: string;
