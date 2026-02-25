@@ -1,30 +1,24 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Configuration, OpenAIApi } from "openai";
 
-export const GEMINI_CHAT_MODEL = "gemini-2.0-flash-lite";
+export const OPENAI_CHAT_MODEL = "gpt-3.5-turbo";
 
-function getGenAI() {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("Missing GEMINI_API_KEY in environment");
-  return new GoogleGenerativeAI(apiKey);
-}
+const OPENAI_API_KEY = "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";
+
+const configuration = new Configuration({ apiKey: OPENAI_API_KEY });
+const openai = new OpenAIApi(configuration);
 
 export async function generateText(opts: {
   prompt: string;
   model?: string;
   temperature?: number;
 }): Promise<string> {
-  const genAI = getGenAI();
-  const model = genAI.getGenerativeModel({
-    model: opts.model ?? GEMINI_CHAT_MODEL,
+  const model = opts.model ?? OPENAI_CHAT_MODEL;
+  const temperature = opts.temperature ?? 0.4;
+  const response = await openai.createChatCompletion({
+    model,
+    messages: [{ role: "user", content: opts.prompt }],
+    temperature,
   });
-
-  const result = await model.generateContent({
-    contents: [{ role: "user", parts: [{ text: opts.prompt }] }],
-    generationConfig: {
-      temperature: opts.temperature ?? 0.4,
-    },
-  });
-
-  const text = result.response.text();
+  const text = response.data.choices[0]?.message?.content;
   return (text ?? "").trim();
 }
