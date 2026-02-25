@@ -2,7 +2,8 @@ import { Configuration, OpenAIApi } from "openai";
 
 export const OPENAI_CHAT_MODEL = "gpt-3.5-turbo";
 
-const THIS = process.env.OPENAI_API_KEY;  
+const THIS = "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";
+
 const configuration = new Configuration({ apiKey: THIS });
 const openai = new OpenAIApi(configuration);
 
