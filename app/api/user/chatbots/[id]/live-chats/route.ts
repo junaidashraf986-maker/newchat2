@@ -39,12 +39,31 @@ export async function GET(
 
     if (!chatbot) return jsonError("Not found", 404);
 
-    const total = await WidgetSession.countDocuments({ chatbotToken: chatbot.token });
-    const sessions = await WidgetSession.find({ chatbotToken: chatbot.token })
-      .sort({ lastSeenAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    const pipeline = [
+      { $match: { chatbotToken: chatbot.token } },
+      {
+        $lookup: {
+          from: "chat_history",
+          localField: "sessionId",
+          foreignField: "sessionId",
+          as: "chatHistory",
+          pipeline: [{ $limit: 1 }]
+        }
+      },
+      { $match: { "chatHistory.0": { $exists: true } } }
+    ];
+
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const totalResult = await WidgetSession.aggregate(countPipeline);
+    const total = totalResult[0]?.total || 0;
+
+    const sessions = await WidgetSession.aggregate([
+      ...pipeline,
+      { $sort: { lastSeenAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      { $project: { chatHistory: 0 } }
+    ]);
 
     return jsonOk({
       sessions: sessions.map((s) => ({
